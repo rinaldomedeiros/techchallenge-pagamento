@@ -1,13 +1,14 @@
-# Utiliza uma imagem base com o JDK 17
 FROM openjdk:17-jdk-slim
 
-# Define o diretório de trabalho
-WORKDIR /app
+VOLUME /tmp
 
-# Copia o jar gerado (supondo que o jar se chame payment-microservice.jar)
-COPY target/order-payment-1.0.0.jar app.jar
+# Define o nome do JAR gerado pelo Maven
+ARG JAR_FILE=target/order-payment-0.0.1-SNAPSHOT.jar
 
-# Expõe a porta em que a aplicação rodará (por exemplo, 8080)
+# Copia o JAR para a imagem com o nome app.jar
+COPY ${JAR_FILE} app.jar
+
+
 EXPOSE 8080
 
 # Comando para executar a aplicação

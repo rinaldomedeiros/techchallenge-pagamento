@@ -9,19 +9,19 @@ services:
       - rabbitmq
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/paymentdb
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=e8a48653851e28c69d0506508fb27fc5
       - SPRING_RABBITMQ_HOST=rabbitmq
 
   postgres:
-    image: postgres:14
+    image: postgres:16.2
     restart: always
     environment:
       POSTGRES_DB: paymentdb
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: e8a48653851e28c69d0506508fb27fc5
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -29,7 +29,7 @@ services:
     image: rabbitmq:3-management
     ports:
       - "5672:5672"
-      - "15672:15672"  # Interface de gerenciamento
+      - "15672:15672"
 
 volumes:
   pgdata:
