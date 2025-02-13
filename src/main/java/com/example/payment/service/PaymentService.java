@@ -1,15 +1,19 @@
 package com.example.payment.service;
 
 import com.example.payment.config.RabbitMQConfig;
+import com.example.payment.dto.OrderPaidMessageDTO;
 import com.example.payment.model.Payment;
 import com.example.payment.model.PaymentStatus;
 import com.example.payment.repository.PaymentRepository;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class PaymentService {
@@ -22,13 +26,13 @@ public class PaymentService {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-
+    @Transactional
     public Payment createPayment(String orderId, BigDecimal orderValue, LocalDateTime createdAt) {
         Payment payment = new Payment(orderId, PaymentStatus.PENDENTE, orderValue, createdAt);
         return paymentRepository.save(payment);
     }
 
-
+    @Transactional
     public Payment confirmPayment(String orderId) throws Exception {
         Payment payment = paymentRepository.findByOrderId(orderId)
                 .orElseThrow(() -> new Exception("Pedido não encontrado para orderId: " + orderId));
@@ -41,16 +45,33 @@ public class PaymentService {
         payment.setUpdatedAt(LocalDateTime.now());
         Payment updatedPayment = paymentRepository.save(payment);
 
+        // Cria o DTO para a mensagem de pagamento confirmado
+        OrderPaidMessageDTO messageDTO = new OrderPaidMessageDTO(
+                updatedPayment.getOrderId(),
+                updatedPayment.getPaymentStatus().toString()
+        );
+
         rabbitTemplate.convertAndSend(
                 RabbitMQConfig.ORDER_PAID_EXCHANGE,
                 RabbitMQConfig.ORDER_PAID_ROUTING_KEY,
-                updatedPayment
+                messageDTO
         );
 
         return updatedPayment;
     }
 
 
+    @Transactional
+    public List<Payment> getAllPayments() {
+        return paymentRepository.findAll();
+    }
+
+    @Transactional
+    public List<Payment> getPaymentsByStatus(PaymentStatus status) {
+        return paymentRepository.findByPaymentStatus(status);
+    }
+
+    @Transactional
     public void updateExpiredPayments() {
         LocalDateTime threshold = LocalDateTime.now().minusMinutes(5);
         List<Payment> expiredPayments = paymentRepository.findByPaymentStatusAndCreatedAtBefore(PaymentStatus.PENDENTE, threshold);

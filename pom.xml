@@ -52,16 +52,19 @@
             <artifactId>spring-boot-starter-amqp</artifactId>
         </dependency>
 
-        <!-- Starter para agendamentos -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
 
-        <!-- Dependência para conversão JSON (já incluída no starter web, mas pode ser explicitada) -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
         <!-- Lombok para evitar boilerplate -->
@@ -82,7 +85,6 @@
 
     <build>
         <plugins>
-            <!-- Plugin do Spring Boot para empacotar o fat jar com o manifesto correto -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -90,7 +92,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>repackage</goal> <!-- Garante que o JAR seja "reempacotado" corretamente -->
+                            <goal>repackage</goal>
                         </goals>
                     </execution>
                 </executions>

@@ -1,18 +1,21 @@
-package com.example.payment.service;
+package com.example.payment.consumer;
 
 import com.example.payment.config.RabbitMQConfig;
+import com.example.payment.dto.OrderRequestedMessageDTO;
 import com.example.payment.model.Payment;
+import com.example.payment.service.PaymentService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
 
 @Component
 public class PaymentConsumer {
 
     private final PaymentService paymentService;
+    private static final Logger logger = LoggerFactory.getLogger(PaymentConsumer.class);
 
     public PaymentConsumer(PaymentService paymentService) {
         this.paymentService = paymentService;
@@ -20,21 +23,23 @@ public class PaymentConsumer {
 
     /**
      * Método que consome mensagens da fila ORDER_REQUESTED_QUEUE.
-     * Espera receber um JSON com campos: orderId, orderValue e timestamp.
+     * Espera receber um JSON com os campos: orderId, amount, timestamp e (opcionalmente) status.
      */
     @RabbitListener(queues = RabbitMQConfig.ORDER_REQUESTED_QUEUE)
-    public void receiveOrderRequestedEvent(Map<String, Object> message) {
+    public void receiveOrderRequestedEvent(OrderRequestedMessageDTO messageDTO) {
         try {
-            String orderId = (String) message.get("orderId");
-            BigDecimal orderValue = new BigDecimal(message.get("orderValue").toString());
+            messageDTO.setTimestamp(LocalDateTime.now());
+            messageDTO.setPaymentStatus("PENDENTE");
 
-            LocalDateTime timestamp = LocalDateTime.parse((String) message.get("timestamp"));
+            Payment payment = paymentService.createPayment(
+                    messageDTO.getOrderId(),
+                    messageDTO.getOrderValue(),
+                    messageDTO.getTimestamp()
+            );
 
-
-            Payment payment = paymentService.createPayment(orderId, orderValue, timestamp);
-            System.out.println("Pedido registrado: " + payment.getOrderId());
+            logger.info("Pedido registrado: " + payment.getOrderId());
         } catch (Exception e) {
-            System.err.println("Erro ao processar a mensagem: " + e.getMessage());
+            logger.error("Erro ao processar a mensagem: " + e.getMessage());
         }
     }
 }

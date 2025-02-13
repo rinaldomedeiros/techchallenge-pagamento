@@ -1,12 +1,18 @@
 package com.example.payment.controller;
 
+import com.example.payment.dto.PaymentDTO;
 import com.example.payment.model.Payment;
+import com.example.payment.model.PaymentStatus;
 import com.example.payment.service.PaymentService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
-@RequestMapping("/payment")
+@RequestMapping("/payments")
 public class PaymentController {
 
     private final PaymentService paymentService;
@@ -15,17 +21,37 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    /**
-     * Endpoint para simular a confirmação do pagamento via webhook do QR Code.
-     * Exemplo: POST /payment/{orderId}/confirm
-     */
     @PostMapping("/{orderId}/confirm")
-    public ResponseEntity<?> confirmPayment(@PathVariable String orderId) {
+    public ResponseEntity<PaymentDTO> confirmPayment(@PathVariable String orderId) {
         try {
             Payment payment = paymentService.confirmPayment(orderId);
-            return ResponseEntity.ok(payment);
+            PaymentDTO dto = PaymentDTO.fromEntity(payment);
+            return ResponseEntity.ok(dto);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
+    @GetMapping
+    public ResponseEntity<List<PaymentDTO>> getPaymentsByStatus(@RequestParam(required = false) String status) {
+        try {
+            List<Payment> payments;
+
+            if (status != null && !status.isEmpty()) {
+                PaymentStatus paymentStatus = PaymentStatus.valueOf(status.toUpperCase());
+                payments = paymentService.getPaymentsByStatus(paymentStatus);
+            } else {
+                payments = paymentService.getAllPayments();
+            }
+
+            List<PaymentDTO> dtos = payments.stream()
+                    .map(PaymentDTO::fromEntity)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(dtos);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Collections.emptyList());
         }
     }
 }
