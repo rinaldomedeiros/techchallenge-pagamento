@@ -1,9 +1,8 @@
-package com.example.payment.consumer;
+package com.example.payment.service;
 
 import com.example.payment.config.RabbitMQConfig;
 import com.example.payment.dto.OrderRequestedMessageDTO;
 import com.example.payment.model.Payment;
-import com.example.payment.service.PaymentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
