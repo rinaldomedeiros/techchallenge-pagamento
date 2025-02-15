@@ -28,7 +28,11 @@ public class PaymentService {
 
     @Transactional
     public Payment createPayment(String orderId, BigDecimal orderValue, LocalDateTime createdAt) {
-        Payment payment = new Payment(orderId, PaymentStatus.PENDENTE, orderValue, createdAt);
+        Payment payment = new Payment();
+        payment.setOrderId(orderId);
+        payment.setPaymentStatus(PaymentStatus.PENDENTE);
+        payment.setOrderValue(orderValue);
+        payment.setCreatedAt(createdAt);
         return paymentRepository.save(payment);
     }
 
