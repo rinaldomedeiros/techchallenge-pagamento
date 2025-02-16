@@ -50,9 +50,7 @@ public class PaymentService {
         Payment updatedPayment = paymentRepository.save(payment);
 
         // Cria o DTO para a mensagem de pagamento confirmado
-        OrderPaidMessageDTO messageDTO = new OrderPaidMessageDTO(
-                updatedPayment.getOrderId(),
-                updatedPayment.getPaymentStatus().toString()
+        OrderPaidMessageDTO messageDTO = new OrderPaidMessageDTO(payment
         );
 
         rabbitTemplate.convertAndSend(
