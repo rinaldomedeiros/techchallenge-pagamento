@@ -40,20 +40,11 @@ GET /payments
 - **Descrição**: Retorna uma lista com todos os pagamentos registrados no sistema.
 - **Retorno**: Status 200 (OK) com a lista de pagamentos.
 
-## 3. Base de Dados (Schema)
+## 3. Banco de Dados
 
-Abaixo está o schema utilizado no banco de dados para armazenar as informações de pagamentos:
+Abaixo está o schema utilizado no banco de dados **PostgreSQL** para armazenar as informações de pagamentos:
 
-```sql
-CREATE TABLE payment (
-  id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  order_id VARCHAR(255) NOT NULL,
-  payment_status VARCHAR(50) NOT NULL,
-  order_value DECIMAL(10,2) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NULL
-);
-```
+![Desenho Banco de dados](./assets/schema_db.png)
 
 ### Campos:
 - **id**: Identificador único do pagamento.
@@ -65,14 +56,9 @@ CREATE TABLE payment (
 
 ## 4. Desenho de Solução
 
-O microsserviço de pagamento segue uma arquitetura limpa e modular, utilizando as seguintes camadas:
+![Desenho solução](./assets/desenho_solucao.png)
 
-- **Controller**: Responsável por expor os endpoints da API REST e receber as requisições.
-- **Service**: Contém a lógica de negócios para gerenciar pagamentos e comunicar-se com o RabbitMQ para enviar mensagens.
-- **Repository**: Realiza a comunicação com a base de dados para persistência dos pagamentos.
-- **Messaging (RabbitMQ)**: Integra-se com outros serviços para comunicar status de pagamentos confirmados.
-
-Fluxo principal:
+Fluxo do microsserviço de Pagamento:
 1. O cliente faz uma requisição para confirmar um pagamento.
 2. O microsserviço atualiza o status do pagamento para `CONFIRMADO`.
 3. Uma mensagem é enviada via RabbitMQ para o microsserviço de pedidos.
@@ -111,5 +97,7 @@ mvn test
 Isso rodará os testes automatizados e gerará o relatório de cobertura de testes com JaCoCo.
 
 ### Evidência de cobertura de testes
+
+![Cobertura de testes](./assets/testes_pagamento.jpg)
 
 
