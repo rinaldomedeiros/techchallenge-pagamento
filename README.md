@@ -74,8 +74,7 @@ Fluxo do microsserviço de Pagamento:
 
 1. **Clonar o repositório**:
 ```bash
-git clone <url-do-repositorio>
-cd techchallenge-pagamento
+git clone https://github.com/rinaldomedeiros/techchallenge-pagamento.git
 ```
 
 2. **Buildar o projeto**:
