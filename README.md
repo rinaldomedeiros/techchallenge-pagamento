@@ -1,6 +1,6 @@
 # Microsserviço de Pagamento
 
-## 1. Objetivo do Microsserviço
+## 1. Objetivos
 
 O **Microsserviço de Pagamento** tem como objetivo processar e gerenciar os pagamentos de pedidos em um ambiente de microsserviços. Ele é responsável por criar, confirmar e atualizar o status dos pagamentos, garantindo a integridade das operações financeiras relacionadas aos pedidos realizados pelos clientes.
 
@@ -15,7 +15,7 @@ O **Microsserviço de Pagamento** tem como objetivo processar e gerenciar os pag
 
 Este microsserviço se integra ao serviço de **Pedidos**. Ele recebe via fila os pedidos pendendes de pagamento e retorna eventos de confirmação de pedidos pagos para atualizar o status de pedidos pagos no serviço de pedidos.
 
-## 2. Exposição dos Endpoints
+## 2. Endpoints
 
 ### Endpoints disponíveis:
 
@@ -74,8 +74,7 @@ Fluxo do microsserviço de Pagamento:
 
 1. **Clonar o repositório**:
 ```bash
-git clone <url-do-repositorio>
-cd techchallenge-pagamento
+git clone https://github.com/rinaldomedeiros/techchallenge-pagamento.git
 ```
 
 2. **Buildar o projeto**:
@@ -90,14 +89,31 @@ docker-compose up --build
 
 Isso iniciará o microsserviço de pagamentos, a base de dados e o RabbitMQ. O serviço estará disponível em `http://localhost:8080`.
 
-4. **Executar os testes**:
+
+## 6. Execução e cobertura de testes
+
+### Execução dos testes
+
+Para realizar a execução dos testes localmente deve ser utilizado o comando maven a seguir:
 ```bash
-mvn test
+mvn clean verify
 ```
 Isso rodará os testes automatizados e gerará o relatório de cobertura de testes com JaCoCo.
 
-### Evidência de cobertura de testes
+### Cobertura dos testes
 
-![Cobertura de testes](./assets/testes_pagamento.jpg)
+Abaixo seguem as evidências da cobertura total de testes unitários (considerando as classes de service, repository e controller. Não foram incluídas classes de configuração na cobertura por não conter lógica e regras de negócio).
+
+1. Execução dos testes unitários:
+
+![Execução dos testes](./assets/testes_pagamento01.jpg)
+
+2. Cobertura total dos testes: 
+
+![Cobertura total](./assets/testes_pagamento02.jpg)
+
+3. Build com sucesso da action no Github: 
+
+![Build finalizado](./assets/testes_pagamento03.jpg)
 
 
